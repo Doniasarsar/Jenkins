@@ -4,7 +4,7 @@ pipeline {
     environment {
         CONTAINER_ID = '' // Variable pour stocker l'ID du conteneur
         SUM_PY_PATH = './sum.py' // Chemin vers le script sum.py
-        DIR_PATH = './' // Chemin vers le répertoire contenant le Dockerfile (par défaut, le répertoire courant)
+        DIR_PATH = '/Users/doniasarsar/Desktop/tpjenkins' // Chemin vers le répertoire contenant le Dockerfile (par défaut, le répertoire courant)
         TEST_FILE_PATH = './test_variables.txt' // Chemin vers le fichier de test
     }
 
