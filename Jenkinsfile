@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image..."
-                    bat "docker build -t sum-calculator ${env.DIR_PATH}"
+                    sh "docker build -t sum-calculator ${env.DIR_PATH}"
                 }
             }
         }
