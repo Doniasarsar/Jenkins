@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        PATH = "/Users/doniasarsar/.docker/bin:$PATH" // Ajoutez ce chemin
         CONTAINER_ID = ""
         SUM_PY_PATH = "./sum.py"
         DIR_PATH = "./"
@@ -13,9 +14,11 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image..."
-                    sh "docker build -t sum-calculator ${env.DIR_PATH}"
+                    sh """
+                        docker build -t sum-calculator ${DIR_PATH}
+                    """
                 }
             }
         }
-     }
+    }
 }
