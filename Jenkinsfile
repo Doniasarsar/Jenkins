@@ -21,4 +21,14 @@ pipeline {
             }
         }
     }
+     stage('Run') {
+            steps {
+                script {
+                    echo "Running Docker container..."
+                    def output = sh(script: "docker run -d -it sum-calculator sh", returnStdout: true).trim()
+                    env.CONTAINER_ID = output
+                    echo "Container ID: ${env.CONTAINER_ID}"
+                }
+            }
+        }
 }
