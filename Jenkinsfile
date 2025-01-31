@@ -21,23 +21,26 @@ pipeline {
             }
         }
     
-        stage('Run') {
+               stage('Run') {
             steps {
                 script {
                     echo "🔄 Running Docker container..."
                     
-                    // Exécuter le conteneur et récupérer son ID
-                    def output = sh(script: "docker run -d -it sum-calculator sh", returnStdout: true).trim()
-                    
-                    if (output) {
-                        env.CONTAINER_ID = output
+                    // Exécuter le conteneur et enregistrer l'ID dans un fichier temporaire
+                    sh "docker run -d -it sum-calculator sh > container_id.txt"
+
+                    // Lire l'ID du conteneur à partir du fichier
+                    env.CONTAINER_ID = sh(script: "cat container_id.txt", returnStdout: true).trim()
+
+                    if (env.CONTAINER_ID) {
                         echo "✅ Container ID: ${env.CONTAINER_ID}"
                     } else {
-                        error "❌ Échec du démarrage du conteneur Docker."
+                        error "❌ Échec du démarrage du conteneur Docker. Aucun ID récupéré."
                     }
                 }
             }
         }
+
 
         stage('Test') {
             steps {
