@@ -28,11 +28,14 @@ pipeline {
                     def output = sh(script: "docker run -d -it sum-calculator sh", returnStdout: true).trim()
                     env.CONTAINER_ID = output
                     echo "Container ID: ${env.CONTAINER_ID}"
+
+                    // Vérifiez que le conteneur est bien en cours d'exécution
+                    sh "docker ps -a --filter id=${env.CONTAINER_ID}"
                 }
             }
         }
 
-               stage('Test') {
+        stage('Test') {
             steps {
                 script {
                     echo "Starting tests..."
@@ -61,10 +64,5 @@ pipeline {
                 }
             }
         }
-
-
-
-
-        
     }
 }
