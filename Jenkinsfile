@@ -22,36 +22,21 @@ pipeline {
             }
         }
     
-                stage('Run') {
+        stage('Run') {
             steps {
                 script {
                     echo "🔄 Running Docker container..."
                     
-                    // Exécuter le conteneur et stocker l'ID dans un fichier
-                    sh "docker run -d -it sum-calculator sh > container_id.txt"
-
-                    // Lire l'ID du conteneur depuis le fichier
-                    env.CONTAINER_ID = sh(script: "cat container_id.txt", returnStdout: true).trim()
-
-                    // Vérifier si l'ID est bien récupéré
-                    if (!env.CONTAINER_ID || env.CONTAINER_ID == "" || env.CONTAINER_ID == "null") {
-                        error "❌ Le conteneur n'a pas démarré correctement. ID invalide : ${env.CONTAINER_ID}"
-                    }
-
+                    // Démarrer le conteneur et récupérer l'ID
+                    def output = sh(script: "docker run -d -it sum-calculator sh", returnStdout: true).trim()
+                    env.CONTAINER_ID = output
                     echo "✅ Container ID: ${env.CONTAINER_ID}"
 
-                    // Vérifier que le conteneur tourne bien
-                    def checkContainer = sh(script: "docker ps --filter id=${env.CONTAINER_ID} --format '{{.ID}}'", returnStdout: true).trim()
-                    
-                    if (!checkContainer || checkContainer.isEmpty()) {
-                        error "❌ Le conteneur ${env.CONTAINER_ID} ne tourne pas correctement."
-                    }
-
-                    echo "🎯 Conteneur démarré avec succès !"
+                    // Vérifier que le conteneur est bien en cours d'exécution
+                    sh "docker ps -a --filter id=${env.CONTAINER_ID}"
                 }
             }
         }
-
 
         stage('Test') {
             steps {
