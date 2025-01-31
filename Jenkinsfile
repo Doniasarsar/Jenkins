@@ -13,7 +13,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo "🚀 Building Docker image..."
+                    echo "Building Docker image..."
                     sh """
                         docker build -t sum-calculator ${DIR_PATH}
                     """
@@ -21,31 +21,21 @@ pipeline {
             }
         }
     
-               stage('Run') {
+        stage('Run') {
             steps {
                 script {
-                    echo "🔄 Running Docker container..."
-                    
-                    // Exécuter le conteneur et enregistrer l'ID dans un fichier temporaire
-                    sh "docker run -d -it sum-calculator sh > container_id.txt"
-
-                    // Lire l'ID du conteneur à partir du fichier
-                    env.CONTAINER_ID = sh(script: "cat container_id.txt", returnStdout: true).trim()
-
-                    if (env.CONTAINER_ID) {
-                        echo "✅ Container ID: ${env.CONTAINER_ID}"
-                    } else {
-                        error "❌ Échec du démarrage du conteneur Docker. Aucun ID récupéré."
-                    }
+                    echo "Running Docker container..."
+                    def output = sh(script: "docker run -d -it sum-calculator sh", returnStdout: true).trim()
+                    env.CONTAINER_ID = output
+                    echo "Container ID: ${env.CONTAINER_ID}"
                 }
             }
         }
 
-
-        stage('Test') {
+               stage('Test') {
             steps {
                 script {
-                    echo "🧪 Starting tests..."
+                    echo "Starting tests..."
                     def testLines = readFile(env.TEST_FILE_PATH).split('\n')
 
                     for (line in testLines) {
@@ -55,7 +45,7 @@ pipeline {
                             def arg2 = vars[1]
                             def expectedSum = vars[2].toFloat()
 
-                            echo "🔢 Testing: ${arg1} + ${arg2} = ${expectedSum}"
+                            echo "Testing: ${arg1} + ${arg2} = ${expectedSum}"
 
                             // Exécuter sum.py dans le conteneur Docker
                             def output = sh(script: "docker exec ${env.CONTAINER_ID} python /app/sum.py ${arg1} ${arg2}", returnStdout: true).trim()
@@ -71,15 +61,10 @@ pipeline {
                 }
             }
         }
-    }
 
-    post {
-        always {
-            script {
-                echo "🧹 Nettoyage : Suppression du conteneur..."
-                sh "docker stop ${env.CONTAINER_ID} || true"
-                sh "docker rm ${env.CONTAINER_ID} || true"
-            }
-        }
+
+
+
+        
     }
 }
